@@ -1,0 +1,163 @@
+/* NavBar.css */
+.landing-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #11141c;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  padding: 0 2rem;
+}
+
+.landing-nav.scrolled {
+  background: #11141c;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+.nav-top-bar {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nav-date {
+  font-size: 0.75rem;
+  color: #8a9fc0;
+  letter-spacing: 0.5px;
+}
+
+.nav-main-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.landing-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+}
+
+.brand-logo {
+  height: 60px;
+  width: auto;
+
+}
+
+.landing-brand-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #eef5ff, #8ab4f8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.landing-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+  padding: 0.3rem 0;
+  border: none;
+  background: #11141C;
+}
+
+.nav-link:hover {
+  color: white;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #8a6c2c;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.landing-login-btn {
+  background: #8a6c2c;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.8rem;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px -4px rgba(37, 99, 235, 0.3);
+  font-family: inherit;
+}
+
+.landing-login-btn:hover {
+  background: #8a6c2c;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -4px rgba(37, 99, 235, 0.4);
+}
+
+.landing-login-btn.active-auth {
+  background: #8a6c2c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+.landing-login-btn.active-auth:hover {
+  background: #8a6c2c;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .landing-nav {
+    padding: 0 1rem;
+  }
+
+  .landing-brand-name {
+    font-size: 1rem;
+  }
+
+  .brand-logo {
+    height: 32px;
+  }
+
+  .landing-nav-links {
+    gap: 1rem;
+  }
+
+  .nav-link {
+    font-size: 0.8rem;
+    display: none;
+  }
+
+  .nav-date {
+    font-size: 0.65rem;
+  }
+
+  .landing-login-btn {
+    padding: 0.4rem 1.2rem;
+    font-size: 0.8rem;
+  }
+}
