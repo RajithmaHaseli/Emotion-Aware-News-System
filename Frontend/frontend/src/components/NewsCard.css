@@ -1,255 +1,111 @@
-/* ============================================================
-   EmotionSense – NewsCard
-   Elegant card with image overlay, per-emotion accent,
-   smooth hover lift, and clean action row
-   ============================================================ */
+/* NewsCard.css — uses tokens.css variables only, no :root here */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Sans:wght@500;700&display=swap');
-
-/* ---------- Per-emotion accent tokens ---------- */
-:root {
-  --mood-happy:    #F59E0B;
-  --mood-calm:     #10B981;
-  --mood-curious:  #3B82F6;
-  --mood-sad:      #64748b;
-  --mood-anxious:  #8B5CF6;
-  --mood-angry:    #EF4444;
-  --mood-neutral:  #94a3b8;
-  --mood-fear:     #f97316;
-  --mood-surprise: #06b6d4;
-  --mood-disgust:  #84cc16;
-  --mood-joy:      #F59E0B;
-
-  --card-radius:   16px;
-  --img-height:    200px;
-
-  --text-primary:   #0f172a;
-  --text-secondary: #475569;
-  --text-muted:     #94a3b8;
-  --border:         #e2e8f0;
-  --bg-card:        #ffffff;
-  --bg-subtle:      #f8fafc;
-
-  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  --shadow-card:  0 2px 8px rgba(15,23,42,0.06), 0 1px 3px rgba(15,23,42,0.04);
-  --shadow-hover: 0 12px 32px rgba(15,23,42,0.10), 0 2px 8px rgba(15,23,42,0.06);
-}
-
-/* ---------- Card shell ---------- */
 .news-card {
-  background: var(--bg-card);
-  border-radius: var(--card-radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-card);
+  background: var(--es-bg-card);
+  border-radius: var(--es-radius-lg);
+  border: 1px solid var(--es-border);
+  box-shadow: var(--es-shadow-sm);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition:
-    transform var(--transition),
-    box-shadow var(--transition);
-  cursor: default;
-  height: 100%;
+  display: flex; flex-direction: column;
+  transition: transform var(--es-transition), box-shadow var(--es-transition);
+  cursor: default; height: 100%;
 }
+.news-card:hover { transform: translateY(-4px); box-shadow: var(--es-shadow-lg); }
 
-.news-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
-}
-
-/* ---------- Image area ---------- */
-.news-image-wrap {
-  position: relative;
-  height: var(--img-height);
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.news-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.news-card:hover .news-image {
-  transform: scale(1.04);
-}
-
-/* Subtle darkening scrim at bottom of image */
+/* Image */
+.news-image-wrap { position: relative; height: 200px; overflow: hidden; flex-shrink: 0; }
+.news-image { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.45s ease; }
+.news-card:hover .news-image { transform: scale(1.04); }
 .news-image-wrap::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 40%,
-    rgba(15, 23, 42, 0.35) 100%
-  );
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(15,23,42,0.35) 100%);
   pointer-events: none;
 }
 
-/* ---------- Top overlay row (source + emotion badge) ---------- */
+/* Top row badges */
 .news-top-row {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  z-index: 1;
+  position: absolute; top: 12px; left: 12px; right: 12px;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; z-index: 1;
 }
 
 .news-source {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #fff;
-  background: rgba(15, 23, 42, 0.52);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  padding: 4px 10px;
-  border-radius: 99px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 55%;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--es-white); background: rgba(15,23,42,0.52);
+  padding: 4px 10px; border-radius: 99px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%;
 }
 
 .news-emotion {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 99px;
-  white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
-
-  /* default – overridden per emotion below */
-  background: var(--mood-neutral);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+  color: var(--es-white); padding: 4px 10px; border-radius: 99px;
+  white-space: nowrap; background: var(--es-mood-neutral);
 }
 
-/* Per-emotion badge colours */
+/* Per-emotion badge colours using shared tokens */
 .news-emotion[data-emotion="Happy"],
-.news-emotion[data-emotion="Joy"]       { background: var(--mood-happy); }
-.news-emotion[data-emotion="Calm"]      { background: var(--mood-calm); }
-.news-emotion[data-emotion="Curious"]   { background: var(--mood-curious); }
+.news-emotion[data-emotion="Joy"]       { background: var(--es-mood-happy); }
+.news-emotion[data-emotion="Calm"]      { background: var(--es-mood-calm); }
+.news-emotion[data-emotion="Curious"]   { background: var(--es-mood-curious); }
 .news-emotion[data-emotion="Sad"],
-.news-emotion[data-emotion="Sadness"]   { background: var(--mood-sad); }
+.news-emotion[data-emotion="Sadness"]   { background: var(--es-mood-sad); }
 .news-emotion[data-emotion="Anxious"],
-.news-emotion[data-emotion="Fear"]      { background: var(--mood-anxious); }
+.news-emotion[data-emotion="Fear"]      { background: var(--es-mood-anxious); }
 .news-emotion[data-emotion="Angry"],
-.news-emotion[data-emotion="Anger"]     { background: var(--mood-angry); }
-.news-emotion[data-emotion="Surprise"]  { background: var(--mood-surprise); }
-.news-emotion[data-emotion="Disgust"]   { background: var(--mood-disgust); }
+.news-emotion[data-emotion="Anger"]     { background: var(--es-mood-angry); }
+.news-emotion[data-emotion="Surprise"]  { background: var(--es-mood-surprise); }
+.news-emotion[data-emotion="Disgust"]   { background: var(--es-mood-disgust); }
 
-/* ---------- Card body ---------- */
-.news-body {
-  padding: 18px 18px 16px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  gap: 10px;
+/* Timer ring */
+.timer-ring-wrap {
+  position: absolute; bottom: 10px; right: 10px; z-index: 2;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
 }
 
-/* ---------- Title ---------- */
+/* Card body */
+.news-body { padding: 18px 18px 16px; display: flex; flex-direction: column; flex: 1; gap: 10px; }
+
 .news-title {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.4;
-  margin: 0;
-
-  /* clamp to 2 lines */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-family: var(--es-font-ui); font-size: 1rem; font-weight: 700;
+  color: var(--es-text-primary); line-height: 1.4; margin: 0;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 
-/* ---------- Description ---------- */
 .news-desc {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.845rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0;
-  flex: 1;
-
-  /* clamp to 3 lines */
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-family: var(--es-font-body); font-size: 0.845rem;
+  color: var(--es-text-secondary); line-height: 1.6; margin: 0; flex: 1;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 
-/* ---------- Action row ---------- */
-.news-actions {
-  display: flex;
-  gap: 8px;
-  padding-top: 4px;
-  margin-top: auto;
+/* Expiry warning */
+.expiry-warning {
+  font-size: 0.78rem; font-weight: 600; color: #92400e;
+  background: #FEF3C7; border: 1px solid #FDE68A;
+  border-radius: var(--es-radius-sm); padding: 7px 12px;
+  animation: warningPulse 0.8s ease-in-out infinite alternate;
 }
+@keyframes warningPulse { from { opacity: 0.8; } to { opacity: 1; } }
 
-/* Shared button base */
+/* Actions */
+.news-actions { display: flex; gap: 8px; padding-top: 4px; margin-top: auto; }
+
 .news-read-btn,
 .news-skip-btn {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  padding: 9px 0;
-  cursor: pointer;
-  transition:
-    background var(--transition),
-    transform var(--transition),
-    box-shadow var(--transition);
+  font-family: var(--es-font-body); font-size: 0.82rem; font-weight: 600;
+  border: none; border-radius: var(--es-radius-sm); padding: 9px 0; cursor: pointer;
+  transition: background var(--es-transition), transform var(--es-transition), box-shadow var(--es-transition);
   white-space: nowrap;
 }
-
 .news-read-btn:active,
-.news-skip-btn:active {
-  transform: scale(0.97);
-}
+.news-skip-btn:active { transform: scale(0.97); }
 
-/* Read More – filled primary */
-.news-read-btn {
-  flex: 1;
-  background: #0f172a;
-  color: #fff;
-  letter-spacing: 0.01em;
-}
+.news-read-btn { flex: 1; background: var(--es-text-primary); color: var(--es-white); }
+.news-read-btn:hover { background: #1e293b; box-shadow: 0 4px 12px rgba(15,23,42,0.18); }
 
-.news-read-btn:hover {
-  background: #1e293b;
-  box-shadow: 0 4px 12px rgba(15,23,42,0.18);
-}
+.news-skip-btn { flex: 0 0 76px; background: var(--es-bg-subtle); color: var(--es-text-muted); border: 1px solid var(--es-border); }
+.news-skip-btn:hover { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
 
-/* Skip – ghost */
-.news-skip-btn {
-  flex: 0 0 76px;
-  background: var(--bg-subtle);
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-}
-
-.news-skip-btn:hover {
-  background: #fee2e2;
-  color: #dc2626;
-  border-color: #fecaca;
-}
-
-/* ---------- Responsive ---------- */
 @media (max-width: 480px) {
-  :root { --img-height: 175px; }
-  .news-body { padding: 14px 14px 12px; }
-  .news-title { font-size: 0.95rem; }
+  .news-image-wrap { height: 175px; }
+  .news-body       { padding: 14px 14px 12px; }
+  .news-title      { font-size: 0.95rem; }
 }

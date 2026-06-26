@@ -73,11 +73,15 @@ function App() {
 
     axios.get("http://localhost:8000/get-default-news")
       .then((res) => {
+        console.log("NEWS RESPONSE:", res.data);         
+      console.log("STATUS:", res.data.status);           
+      console.log("ARTICLES:", res.data.articles?.length);
+
         if (res.data.status === "success" && res.data.articles) {
           setArticles(res.data.articles);
         }
       })
-      .catch((e) => console.log("Initial load error:", e))
+      .catch((e) => console.log("News Fetch error:", e))
       .finally(() => setLoading(false));
   }, [userId]);
 

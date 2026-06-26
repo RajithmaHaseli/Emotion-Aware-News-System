@@ -1,0 +1,99 @@
+/* ============================================================
+   EmotionSense — tokens.css
+   Single source of truth for ALL CSS custom properties.
+   Import this FIRST in index.js or App.js before any other CSS.
+   Every other CSS file must ONLY use var(--token-name) and
+   must NOT redeclare :root variables.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&family=DM+Sans:wght@500;700&display=swap');
+
+/* ── Global reset ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--es-font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ================================================================
+   ROOT TOKENS — declared ONCE, used everywhere
+================================================================ */
+:root {
+
+  /* ── Typography ─────────────────────────────────────────── */
+  --es-font-display: 'Playfair Display', Georgia, serif;
+  --es-font-body:    'Inter', system-ui, sans-serif;
+  --es-font-ui:      'DM Sans', system-ui, sans-serif;
+
+  /* ── Landing / dark surface colours ────────────────────── */
+  --es-navy:           #080E1A;
+  --es-navy-mid:       #0D1526;
+  --es-navy-card:      #111827;
+  --es-navy-border:    rgba(255,255,255,0.08);
+
+  /* ── Brand accent ───────────────────────────────────────── */
+  --es-indigo:         #6366F1;
+  --es-indigo-dim:     rgba(99,102,241,0.15);
+  --es-indigo-glow:    rgba(99,102,241,0.35);
+
+  /* ── Light surface colours (news feed / dashboard) ──────── */
+  --es-bg-page:        #f1f5f9;
+  --es-bg-card:        #ffffff;
+  --es-bg-subtle:      #f8fafc;
+  --es-bg-hover:       #f1f5f9;
+
+  /* ── Text (light surfaces) ──────────────────────────────── */
+  --es-text-primary:   #0f172a;
+  --es-text-secondary: #475569;
+  --es-text-muted:     #94a3b8;
+
+  /* ── Text (dark surfaces / landing) ────────────────────── */
+  --es-white:          #ffffff;
+  --es-white-80:       rgba(255,255,255,0.80);
+  --es-white-50:       rgba(255,255,255,0.50);
+  --es-white-20:       rgba(255,255,255,0.20);
+  --es-white-08:       rgba(255,255,255,0.08);
+
+  /* ── Border (light surfaces) ───────────────────────────── */
+  --es-border:         #e2e8f0;
+  --es-border-strong:  #cbd5e1;
+
+  /* ── Mood colours — used across ALL pages ───────────────── */
+  --es-mood-happy:     #F59E0B;
+  --es-mood-calm:      #10B981;
+  --es-mood-curious:   #3B82F6;
+  --es-mood-sad:       #64748b;
+  --es-mood-anxious:   #8B5CF6;
+  --es-mood-angry:     #EF4444;
+  --es-mood-neutral:   #94a3b8;
+  --es-mood-fear:      #f97316;
+  --es-mood-surprise:  #06b6d4;
+  --es-mood-disgust:   #84cc16;
+  --es-mood-joy:       #F59E0B;
+
+  /* ── Semantic colours ───────────────────────────────────── */
+  --es-success:        #10B981;
+  --es-warning:        #F59E0B;
+  --es-danger:         #EF4444;
+  --es-info:           #3B82F6;
+
+  /* ── Border radius scale ───────────────────────────────── */
+  --es-radius-sm:  6px;
+  --es-radius-md:  10px;
+  --es-radius-lg:  16px;
+  --es-radius-xl:  22px;
+  --es-radius-2xl: 28px;
+
+  /* ── Shadow scale ───────────────────────────────────────── */
+  --es-shadow-sm:  0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --es-shadow-md:  0 4px 16px rgba(15,23,42,0.08), 0 1px 4px rgba(15,23,42,0.04);
+  --es-shadow-lg:  0 16px 48px rgba(15,23,42,0.12), 0 2px 8px rgba(15,23,42,0.06);
+
+  /* ── Transitions ────────────────────────────────────────── */
+  --es-transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  --es-transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
