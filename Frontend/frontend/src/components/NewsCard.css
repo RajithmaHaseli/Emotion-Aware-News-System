@@ -1,4 +1,4 @@
-/* NewsCard.css — uses tokens.css variables only, no :root here */
+
 
 .news-card {
   background: var(--es-bg-card);

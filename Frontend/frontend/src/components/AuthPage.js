@@ -20,6 +20,7 @@ function AuthPage({ onLogin, onBackToLanding }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // Eye toggle state
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -80,6 +81,7 @@ function AuthPage({ onLogin, onBackToLanding }) {
     setUsername("");
     setEmail("");
     setPassword("");
+    setShowPassword(false);
   };
 
   return (
@@ -175,16 +177,37 @@ function AuthPage({ onLogin, onBackToLanding }) {
 
               <div className="field">
                 <label>Password</label>
-                <div className="input-box">
+                <div className="input-box" style={{ position: "relative" }}>
                   <span>🔒</span>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder={isLogin ? "Enter password" : "Minimum 6 characters"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
+                    style={{ paddingRight: "40px" }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: "absolute",
+                      right: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: "16px",
+                      padding: 0,
+                      display: "flex",
+                      alignItems: "center"
+                    }}
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? "👁️" : "👁️‍🗨️"}
+                  </button>
                 </div>
               </div>
 

@@ -115,7 +115,7 @@ function LandingPage({ onEnter }) {
       <section id="features" className="landing-section">
         <div className="section-heading">
           <h2>System Architectural Framework</h2>
-          <p className="section-sub">Bridging Human-Computer Interaction (HCI) with Advanced Sentiment Analytics.</p>
+          
         </div>
 
         <div className="feature-grid">
@@ -152,7 +152,7 @@ function LandingPage({ onEnter }) {
             <h2>What is EmotionSense?</h2>
           </div>
           <p className="about-text">
-            EmotionSense is a capstone final-year individual research project focused on building supportive, emotion-aware digital spaces. By analyzing subtle interaction dynamics rather than relying on disruptive manual inputs, the system creates an automated feedback loop. It intercepts toxic content cycles and substitutes reassuring, curious, or positive global journalism—transforming how we interact with breaking media.
+            EmotionSense is an emotion-aware news platform that understands your mood and personalises your news experience. It analyses your interactions, filters news based on your emotional state, and adapts the interface to provide a more comfortable and personalised reading experience.
           </p>
           <div className="about-footer">
             <span>EmotionSense</span>
