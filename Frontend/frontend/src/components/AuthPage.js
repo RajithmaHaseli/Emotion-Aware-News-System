@@ -1,5 +1,5 @@
 // AuthPage.js
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import NavBar from "./NavBar";
 import "./AuthPage.css";
@@ -20,7 +20,7 @@ function AuthPage({ onLogin, onBackToLanding }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // Eye toggle state
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,17 +30,44 @@ function AuthPage({ onLogin, onBackToLanding }) {
     setMounted(true);
   }, []);
 
+  const getPasswordStrength = (pwd) => {
+    if (!pwd) return { label: "", color: "" };
+    if (pwd.length < 6) return { label: "Weak 🔴", color: "#EF4444" };
+    
+    const hasUpper = /[A-Z]/.test(pwd);
+    const hasNumber = /\d/.test(pwd);
+    const hasSpecial = /[@$!%*?&]/.test(pwd);
+
+    if (pwd.length >= 8 && hasUpper && hasNumber && hasSpecial) {
+      return { label: "Strong 🟢", color: "#10B981" };
+    }
+    return { label: "Moderate 🟡", color: "#F59E0B" };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (!isLogin) {
+      const strongPasswordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+      if (!strongPasswordRegex.test(password)) {
+        setError(
+          "Password must contain at least 8 characters, including 1 uppercase letter, 1 number, and 1 special character (@$!%*?&)."
+        );
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
       const endpoint = isLogin ? "/login" : "/signup";
       const payload = isLogin
-        ? { email, password }
-        : { username, email, password };
+        ? { email: email.trim(), password }
+        : { username: username.trim(), email: email.trim(), password };
 
       const res = await axios.post(
         `http://localhost:8000${endpoint}`,
@@ -49,29 +76,27 @@ function AuthPage({ onLogin, onBackToLanding }) {
 
       if (res.data.success) {
         if (isLogin) {
-          setSuccess("Login successful!");
-          setTimeout(() => {
-            onLogin(res.data.user_id, res.data.username);
-          }, 700);
+          onLogin(
+            res.data.user_id,
+            res.data.username,
+            res.data.instant_news || []
+          );
         } else {
           setSuccess("Account created successfully. Please sign in.");
           setUsername("");
           setEmail("");
           setPassword("");
-          setTimeout(() => {
-            setIsLogin(true);
-            setSuccess("");
-          }, 1600);
+          setIsLogin(true);
         }
       } else {
-        setError(res.data.message || "Something went wrong");
+        setError(res.data.message || "Authentication failed");
       }
     } catch (err) {
-      console.log(err);
+      console.error("Authentication error:", err);
       setError("Cannot connect to backend server");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const switchMode = (login) => {
@@ -84,16 +109,14 @@ function AuthPage({ onLogin, onBackToLanding }) {
     setShowPassword(false);
   };
 
+  const strength = getPasswordStrength(password);
+
   return (
     <>
-      <NavBar 
-        onLoginClick={onBackToLanding} 
-        isAuthPage={true} 
-      />
-      
+      <NavBar onLoginClick={onBackToLanding} isAuthPage={true} />
+
       <div className="auth-page">
         <div className={`auth-shell ${mounted ? "show" : ""}`}>
-          {/* LEFT NEWS BRAND PANEL */}
           <section className="news-panel">
             <div className="brand-row">
               <img src={logo} alt="EmotionSense Logo" className="brand-logo" />
@@ -114,7 +137,6 @@ function AuthPage({ onLogin, onBackToLanding }) {
             </div>
           </section>
 
-          {/* RIGHT FORM PANEL */}
           <section className="form-panel">
             <div className="tabs">
               <button
@@ -156,6 +178,7 @@ function AuthPage({ onLogin, onBackToLanding }) {
                       onChange={(e) => setUsername(e.target.value)}
                       required
                       minLength={3}
+                      autoComplete="username"
                     />
                   </div>
                 </div>
@@ -171,6 +194,7 @@ function AuthPage({ onLogin, onBackToLanding }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    autoComplete="email"
                   />
                 </div>
               </div>
@@ -181,11 +205,14 @@ function AuthPage({ onLogin, onBackToLanding }) {
                   <span>🔒</span>
                   <input
                     type={showPassword ? "text" : "password"}
-                    placeholder={isLogin ? "Enter password" : "Minimum 6 characters"}
+                    placeholder={
+                      isLogin ? "Enter password" : "Min 8 chars, 1 uppercase, 1 num, 1 symbol"
+                    }
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={isLogin ? 6 : 8}
+                    autoComplete={isLogin ? "current-password" : "new-password"}
                     style={{ paddingRight: "40px" }}
                   />
                   <button
@@ -202,20 +229,33 @@ function AuthPage({ onLogin, onBackToLanding }) {
                       fontSize: "16px",
                       padding: 0,
                       display: "flex",
-                      alignItems: "center"
+                      alignItems: "center",
                     }}
                     title={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? "👁️" : "👁️‍🗨️"}
                   </button>
                 </div>
+
+                {!isLogin && password && (
+                  <div
+                    style={{
+                      fontSize: "0.8rem",
+                      marginTop: "6px",
+                      fontWeight: "600",
+                      color: strength.color,
+                    }}
+                  >
+                    Strength: {strength.label}
+                  </div>
+                )}
               </div>
 
               {error && <div className="message error">⚠️ {error}</div>}
               {success && <div className="message success">✅ {success}</div>}
 
               <button type="submit" className="submit-btn" disabled={loading}>
-                {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
+                {loading ? "Verifying..." : isLogin ? "Sign In" : "Create Account"}
               </button>
             </form>
 

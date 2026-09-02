@@ -212,6 +212,159 @@
 .confidence-bar-fill  { height: 100%; border-radius: 99px; background: var(--es-mood-calm); transition: width 0.6s cubic-bezier(0.22,1,0.36,1); }
 .confidence-pct       { font-size: 0.72rem; font-weight: 700; color: var(--es-text-muted); }
 
+
+/* ── Affective Status Header Bar ──────────────────────────── */
+.affective-status-bar {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  padding: 10px 24px;
+  position: sticky;
+  top: 60px;
+  z-index: 90;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.status-bar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mood-indicator-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.mood-icon {
+  font-size: 1.2rem;
+}
+
+.redirect-hint {
+  font-size: 0.8rem;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: #64748b;
+  margin-left: 6px;
+}
+
+/* ── Model Confidence Score Badge ─────────────────────────── */
+.inference-metrics-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.confidence-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.engine-tag {
+  font-size: 0.7rem;
+  opacity: 0.85;
+  border-left: 1px solid currentColor;
+  padding-left: 6px;
+}
+
+/* ── Pulsing Status Indicator ─────────────────────────────── */
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.25);
+  }
+}
+
+.telemetry-live-status {
+  font-size: 0.8rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spinner-mini {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #cbd5e1;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Layout Defaults ──────────────────────────────────────── */
+.main-content {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 20px;
+}
+
+.news-feed-header {
+  margin-bottom: 20px;
+}
+
+.news-feed-header h2 {
+  font-size: 1.5rem;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.news-feed-header p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.empty-news-view {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+}
+
 @media (max-width: 768px) {
   .header        { padding: 0 16px; height: 60px; }
   .header-sub    { display: none; }

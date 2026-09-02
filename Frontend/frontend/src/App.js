@@ -35,16 +35,41 @@ function App() {
 
   const [articles, setArticles] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [fetchingLive, setFetchingLive] = useState(false);
   const [skipCount, setSkipCount] = useState(0);
   const refilling = useRef(false);
 
+  // In-memory set tracking already rendered article identifiers throughout the session
+  const seenArticleUrls = useRef(new Set());
+
   const theme = MOOD_THEMES[mood] || MOOD_THEMES.calm;
 
-  const handleLogin = (id, name) => {
+  // Deduplication utility to scrub identical stories by URL or title
+  const deduplicateArticles = useCallback((articleList) => {
+    const uniqueList = [];
+    articleList.forEach((item) => {
+      const identifier = (item.url || item.title || "").trim().toLowerCase();
+      if (identifier && !seenArticleUrls.current.has(identifier)) {
+        seenArticleUrls.current.add(identifier);
+        uniqueList.push(item);
+      }
+    });
+    return uniqueList;
+  }, []);
+
+  const handleLogin = (id, name, instantNews = []) => {
     setUserId(id);
     setUsername(name);
+
+    if (Array.isArray(instantNews) && instantNews.length > 0) {
+      const uniqueInitial = deduplicateArticles(instantNews);
+      setArticles(uniqueInitial);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
     navigate("/news");
   };
 
@@ -53,12 +78,13 @@ function App() {
     setUsername("");
     setSessionId(null);
     setArticles([]);
+    seenArticleUrls.current.clear();
     setMood("calm");
     setDetectedMood("calm");
     setConfidence(0);
     setSkipCount(0);
     setRedirected(false);
-    setLoading(true);
+    setLoading(false);
     navigate("/");
   };
 
@@ -67,29 +93,31 @@ function App() {
 
     axios.get("http://localhost:8000/session")
       .then((res) => setSessionId(res.data.session_id))
-      .catch((e) => console.log("Session error:", e));
+      .catch((e) => console.log("Session retrieval error:", e));
 
-    setLoading(true);
+    setArticles((currentArticles) => {
+      if (currentArticles && currentArticles.length > 0) {
+        setLoading(false);
+        return currentArticles;
+      }
 
-    axios.get("http://localhost:8000/get-default-news")
-      .then((res) => {
-        console.log("NEWS RESPONSE:", res.data);         
-      console.log("STATUS:", res.data.status);           
-      console.log("ARTICLES:", res.data.articles?.length);
+      setLoading(true);
+      axios.get("http://localhost:8000/get-default-news")
+        .then((res) => {
+          if (res.data.status === "success" && res.data.articles) {
+            const uniqueFallbacks = deduplicateArticles(res.data.articles);
+            setArticles(uniqueFallbacks);
+          }
+        })
+        .catch((e) => console.log("News fallback error:", e))
+        .finally(() => setLoading(false));
 
-        if (res.data.status === "success" && res.data.articles) {
-          setArticles(res.data.articles);
-        }
-      })
-      .catch((e) => console.log("News Fetch error:", e))
-      .finally(() => setLoading(false));
-  }, [userId]);
+      return currentArticles;
+    });
+  }, [userId, deduplicateArticles]);
 
+  // Merge newly inferred articles while preserving variety and rejecting duplicates
   const handleMoodChange = useCallback((data) => {
-    console.log("ML response:", data);
-  console.log("News source:", data.news_source);
-  console.log("Articles count:", data.articles?.length);
-
     const newDetected = data.detected_mood || data.mood || "calm";
     const newDisplay = data.display_mood || data.mood || "calm";
 
@@ -99,12 +127,23 @@ function App() {
     setSource(data.source || "rules");
     setRedirected(data.redirected || false);
 
-if (Array.isArray(data.articles) && data.articles.length > 0) {
-  setArticles(data.articles);
-}
+    if (Array.isArray(data.articles) && data.articles.length > 0) {
+      setArticles((prev) => {
+        const freshUnique = deduplicateArticles(data.articles);
+        
+        // If all live arrivals are duplicates, keep existing buffer without flushing
+        if (freshUnique.length === 0) {
+          return prev;
+        }
+
+        // Prepend fresh stories while keeping the total active feed capped at 30
+        const combined = [...freshUnique, ...prev];
+        return combined.slice(0, 30);
+      });
+    }
 
     setFetchingLive(false);
-  }, []);
+  }, [deduplicateArticles]);
 
   const { recordClick, recordSkip } = useBehaviour(
     handleMoodChange,
@@ -119,25 +158,24 @@ if (Array.isArray(data.articles) && data.articles.length > 0) {
     setSkipCount((prev) => prev + 1);
   }, [recordSkip]);
 
-  // Auto-refill feed from DB when articles run low so the user never sees an empty feed
+  // Buffer refill with deduplication when the user nears the end of the feed
   useEffect(() => {
     if (!userId || loading || fetchingLive || refilling.current) return;
-    if (articles.length >= 5) return;
+    if (articles.length >= 6) return;
 
     refilling.current = true;
     axios.get("http://localhost:8000/get-default-news")
       .then((res) => {
         if (res.data.status === "success" && res.data.articles?.length > 0) {
           setArticles((prev) => {
-            const existingUrls = new Set(prev.map((a) => a.url));
-            const fresh = res.data.articles.filter((a) => !existingUrls.has(a.url));
-            return [...prev, ...fresh];
+            const freshItems = deduplicateArticles(res.data.articles);
+            return [...prev, ...freshItems];
           });
         }
       })
       .catch(() => {})
       .finally(() => { refilling.current = false; });
-  }, [articles.length, userId, loading, fetchingLive]);
+  }, [articles.length, userId, loading, fetchingLive, deduplicateArticles]);
 
   const handleClick = useCallback((article) => {
     recordClick();
@@ -160,7 +198,6 @@ if (Array.isArray(data.articles) && data.articles.length > 0) {
             marginRight: "12px",
           }}
         />
-
         <div>
           <h1 className="header-title">EmotionSense</h1>
           <p className="header-sub">News that adapts to how you feel</p>
@@ -168,7 +205,6 @@ if (Array.isArray(data.articles) && data.articles.length > 0) {
       </div>
 
       <div className="header-right">
-      
         <button
           className="logout-btn"
           onClick={() => navigate("/dashboard")}
@@ -188,8 +224,7 @@ if (Array.isArray(data.articles) && data.articles.length > 0) {
         <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>
-         <span className="header-user">👤 {username}</span>
-
+        <span className="header-user">👤 {username}</span>
       </div>
     </header>
   );
@@ -260,7 +295,7 @@ if (Array.isArray(data.articles) && data.articles.length > 0) {
             >
               {articles.map((article, i) => (
                 <NewsCard
-                  key={i}
+                  key={`${article.url || article.title}-${i}`}
                   article={article}
                   onClick={handleClick}
                   onSkip={() => handleSkip(i)}
